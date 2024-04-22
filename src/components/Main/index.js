@@ -57,7 +57,7 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
             </div>
         </div>
         {isToday? 
-        <div className="row-span-2 flex  gap-4 px-1 justify-start w-full ">
+        <div className="row-span-2 flex gap-4 px-1 justify-start w-full ">
             {selectedItems?.map((item, index)=> {
                 const hour = new Date(item?.dt * 1000).toLocaleTimeString([], {hour: '2-digit', hour12: true});
                 const date = new Date(item?.dt * 1000);
@@ -65,14 +65,14 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                 const feelsLike = parseInt(item?.feels_like)
                 const weatherIconCode = item?.weather?.[0]?.icon;
                 return (
-                    <div className='flex-1 min-w-10 max-w-30 bg-white h-32 flex flex-col justify-between items-center p-3 rounded-xl'>
+                    <div className='flex-1 min-w-10 max-w-30 bg-white h-32 flex flex-col justify-between items-center p-4 rounded-xl'>
                         <div className='text-sm'>{hour}</div>
                         <div>
                             <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
                         </div>
-                        <div>
-                            <span>{temp}°</span>{" "}
-                            <span className='text-gray-500'>{feelsLike}°</span>
+                        <div className='text-xs'>
+                            <span className='text-xs'>{temp}°</span>{" "}
+                            <span className='text-gray-500 text-xs'>{feelsLike}°</span>
                         </div>
                     </div>
                 )
@@ -88,14 +88,14 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                 const weatherDescription = item.weather[0].description;
                 const weatherIconCode = item.weather[0].icon;
                 return (
-                    <div className='flex-1 min-w-10 max-w-30 bg-white h-32 flex flex-col justify-between items-center p-3 rounded-xl'>
+                    <div className='flex-1 min-w-10 max-w-30 bg-white h-32 flex flex-col justify-between items-center p-4 rounded-xl'>
                         <div className='text-sm'>{day.slice(0,3)}</div>
                         <div>
                             <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
                         </div>
-                        <div>
-                            <span>{maxTemp}°</span>{" "}
-                            <span className='text-gray-500'>{minTemp}°</span>
+                        <div className='text-xs'>
+                            <span  className='text-xs'>{maxTemp}°</span>{" "}
+                            <span className='text-gray-500 text-xs'>{minTemp}°</span>
                         </div>
                     </div>
                 )
@@ -123,7 +123,7 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                             <span className="material-symbols-outlined" style={{fontSize:"2em"}}>
                                 air
                             </span>
-                            <div className='text-2xl'>{parseInt(todayData?.wind_speed)} Km/h</div>
+                            <div className='text-2xl'>{parseInt(todayData?.wind_speed)} {isFarenheit? "Miles/hr" : "Km/h"}</div>
                         </div>
                     </div>
 
