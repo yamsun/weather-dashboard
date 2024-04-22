@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
-const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, getMyLocation, isFarenheit}) => {
+const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, getMyLocation, isFarenheit, loading}) => {
     console.log('weatherData in side', data);
     const [cityImage, setCityImage] = useState('https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1571679654681-ba01b9e1e117')
-    const [weatherImg, setWeatherImg] = useState("")
+    const [weatherImg, setWeatherImg] = useState("https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1571679654681-ba01b9e1e117")
 
     console.log({cityImage});
 
@@ -35,6 +35,12 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
         getCityImage(cityName)
         getWeatherImage(data?.weather?.[0]?.description)
     }, [data, cityName])
+
+    const timestamp = data?.dt * 1000;
+    const date = new Date(timestamp);
+    const formattedDateTime = date.toLocaleString('en-US', { weekday: 'long', hour: 'numeric', minute: 'numeric' });
+
+
   return (
     <div className='flex flex-col justify-around p-10 gap-4 h-full'>
         <div className='flex justify-between items-center gap-2'>
@@ -64,15 +70,18 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
         </div>
 
         <div className='flex justify-center items-center w-full min-h-40 h-[20vh] relative'>
-            <img src={weatherImg} className="w-full h-full object-cover rounded-2xl"/>
-            {/* <img height='200px' width='200px' src={`https://openweathermap.org/img/wn/10d@4x.png`} /> */}
-            <div className='absolute bottom-2 flex flex-col items-center text-white'>
-                <div className='flex'>
-                    <h1 className='text-8xl font-light'>{parseInt(data?.main?.temp)}</h1>
-                    <h1 className='text-6xl font-light'>°{isFarenheit? "F" : "C"}</h1>
-                </div>
-                <div className='text-lg font-normal'>Monday, <span >16:00</span></div>
-            </div>
+            {loading?.city ? <ImageSkeleton /> : (
+                <>
+                    <img src={weatherImg} className="w-full h-full object-cover rounded-2xl" alt={data?.weather?.[0]?.description}/>
+                    <div className='absolute bottom-2 flex flex-col items-center text-white'>
+                        <div className='flex'>
+                            <h1 className='text-8xl font-light'>{parseInt(data?.main?.temp)}</h1>
+                            <h1 className='text-6xl font-light'>°{isFarenheit? "F" : "C"}</h1>
+                        </div>
+                        <div className='text-lg font-normal'>{formattedDateTime}</div>
+                    </div>
+                </>
+            )}
         </div>
       
         <div className=' py-4 flex flex-col gap-6'>
@@ -81,7 +90,7 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
                 cloud
             </span>
 
-            <div className='align-middle'>{data?.weather?.[0]?.description}</div>
+            <div className='align-middle'>{data?.weather?.[0]?.description || "loading..."}</div>
             </div>
             <div className='flex gap-2 items-center'> 
                 <span className="material-symbols-outlined">
@@ -93,15 +102,35 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
             </div>
         </div>
         <div className='w-full h-[30vh] relative' >
-            <img src={cityImage} 
-                className="w-full h-full object-cover rounded-2xl" alt={data?.name}
-            />
-            <div className="absolute inset-0 flex justify-center items-center text-white">
-                <span className="text-2xl font-medium p-2  hover:bg-gray-800 hover:bg-opacity-70 hover:text-white">{data?.name}, {data?.sys?.country}</span>
-            </div>
+            {
+                loading?.city ? (
+                    <ImageSkeleton />
+                ) : (
+                    <>
+                        <img src={cityImage} 
+                            className="w-full h-full object-cover rounded-2xl" alt={data?.name}
+                            />
+                        <div className="absolute inset-0 flex justify-center items-center text-white">
+                            <span className="text-2xl font-medium p-2  hover:bg-gray-800 hover:bg-opacity-70 hover:text-white">{data?.name}, {data?.sys?.country}</span>
+                        </div>
+                    </>
+
+                )
+            }
         </div>
     </div>
   )
+}
+
+const ImageSkeleton = () => {
+    return (
+        <>
+            <div class="h-full w-full rounded-2xl bg-gray-200 object-cover"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                <div class="h-10 w-2/3 rounded bg-gray-200"></div>
+            </div>
+        </>
+    )
 }
 
 export default SidePanel

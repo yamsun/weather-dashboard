@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 
 
-const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setIsToday, hourlyData, uviData, airData }) => {
+const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setIsToday, uviData, airData, loading }) => {
     let todayData = weatherData
     const sunriseTime = new Date(todayData?.sys?.sunrise * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     const sunsetTime = new Date(todayData?.sys?.sunset * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -61,34 +61,62 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
         </div>
 
         : <div className="row-span-3  flex  gap-4 px-1 justify-start w-full ">
-            {weekData?.map((item, index)=> {
-                const date = new Date(item?.dt * 1000);
-                const day = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
-                const maxTemp = parseInt(item.main.temp_max);
-                const minTemp = parseInt(item.main.temp_min);
-                // const weatherDescription = item.weather?.[0].description;
-                const weatherIconCode = item.weather?.[0].icon;
-                return (
-                    <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl bg-gradient-to-b from-white via-slate-200 to-white'>
-                        <div className='text-sm font-medium'>{day.slice(0,3)}</div>
-                        <div>
-                            <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
-                        </div>
-                        <div className='text-xs'>
-                            <span  className='text-xs'>{maxTemp}°</span>{" "}
-                            <span className='text-gray-500 text-xs'>{minTemp}°</span>
-                        </div>
-                    </div>
-                )
-            })}
+            <>
+                {loading?.forecast ? (
+                    <>
+                        <ForeCastCardSkeleton />
+                        <ForeCastCardSkeleton />
+                        <ForeCastCardSkeleton />
+                        <ForeCastCardSkeleton />
+                        <ForeCastCardSkeleton />
+                        <ForeCastCardSkeleton />
+                    </>
+                ) : (
+                    <>
+                        {weekData?.map((item, index)=> {
+                            const date = new Date(item?.dt * 1000);
+                            const day = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
+                            const maxTemp = parseInt(item.main.temp_max);
+                            const minTemp = parseInt(item.main.temp_min);
+                            // const weatherDescription = item.weather?.[0].description;
+                            const weatherIconCode = item.weather?.[0].icon;
+                            return (
+                                <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl bg-gradient-to-b from-white via-slate-200 to-white'>
+                                    <div className='text-sm font-medium'>{day.slice(0,3)}</div>
+                                    <div>
+                                        <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
+                                    </div>
+                                    <div className='text-xs'>
+                                        <span  className='text-xs'>{maxTemp}°</span>{" "}
+                                        <span className='text-gray-500 text-xs'>{minTemp}°</span>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </>
+                ) }
+            </>
         </div>
         }
         <div className="row-span-7  flex flex-col  h-full pt-4 mt-6 gap-4" >
             <div className='text-xl font-medium'>Today's Highlights</div>
             
             <div className="grid grid-cols-3 grid-rows-2 gap-4 p-1 ">
-    
-                    <div className='flex-1 min-w-20 max-w-30 bg-white h-32 flex flex-col justify-between  py-2 px-4 rounded-3xl'>
+
+                <>
+                    {
+                        loading?.city ? ( 
+                            <>
+                                <HighlightsCardSkeleton/>
+                                <HighlightsCardSkeleton/>
+                                <HighlightsCardSkeleton/>
+                                <HighlightsCardSkeleton/>
+                                <HighlightsCardSkeleton/>
+                                <HighlightsCardSkeleton/>
+
+                            </>
+                        ) : ( <> 
+                        <div className='flex-1 min-w-20 max-w-30 bg-white h-32 flex flex-col justify-between  py-2 px-4 rounded-3xl'>
                         <div className='text-[#979797] text-left'>UV Index</div>
                         <div className='flex flex-col justify-between h-full w-full p-2 items-center'>
                             <span className="material-symbols-outlined" style={{fontSize:"2em"}}>
@@ -160,6 +188,12 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                          </div>
                         
                     </div>
+                        </>)
+
+                    }
+                </>
+    
+
             
             </div>
     
@@ -191,6 +225,18 @@ const ForeCastCardSkeleton = () => {
             <div class="h-4 bg-gray-400 rounded w-1/2"></div>
             <div class="h-16 w-16 bg-gray-400 rounded-full mt-2"></div>
             <div class="h-4 bg-gray-400 rounded w-2/3 mt-2"></div>
+        </div>
+    )
+}
+
+const HighlightsCardSkeleton = () => {
+    return (
+        <div class="flex-1 min-w-20 max-w-30 bg-white h-32 flex flex-col justify-between  py-2 px-4 rounded-3xl animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-full"></div>
+            <div class="flex flex-col justify-between h-full w-full p-2 items-center">
+                <div class="h-10 bg-gray-200 rounded w-4/5"></div>
+                <div class="h-8 bg-gray-200 rounded w-1/2"></div>
+            </div>
         </div>
     )
 }

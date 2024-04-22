@@ -18,8 +18,15 @@ function App() {
   const [uviData, setUviData] = useState("");
   const [airData, setAirData] = useState("");
 
+  const [loading, setLoading] = useState({
+    city: false,
+    forecast: false,
+    uvi: false,
+    aqi: false,
+  })
+
   const getWeatherByCity = (cityName) => {
-    console.log({ cityName });
+    setLoading(p => ({ ...p, city: true }))
     axios
       .get("https://api.openweathermap.org/data/2.5/weather", {
         params: {
@@ -40,10 +47,14 @@ function App() {
         console.log("Weather by city error", err);
         // setWeatherData(null);
         alert(err?.response?.data?.message)
-      });
+      })
+      .finally(() => {
+        setLoading(p => ({ ...p, city: false }))
+      })
   };
 
   const getWeatherByCoordinates = (lat, lon) => {
+    setLoading(p => ({ ...p, city: true }))
     axios
       .get("https://api.openweathermap.org/data/2.5/weather", {
         params: {
@@ -62,10 +73,14 @@ function App() {
       .catch((err) => {
         console.log("Weather by Coordinates error", err);
         setWeatherData(null);
-      });
+      })
+      .finally(()=> {
+        setLoading(p => ({ ...p, city: false }))
+      })
   };
 
   const getWeatherDataOneCall = (lat, lon) => {
+    setLoading(p => ({ ...p, forecast: true }))
     let params = {
       appid: "ac04facc0292386d4ce278841518c209",
       units: isFarenheit ? "imperial" : "metric",
@@ -81,9 +96,13 @@ function App() {
     .catch(err => {
       console.log({err})
     })
+    .finally(()=> {
+      setLoading(p => ({ ...p, forecast: false }))
+    })
   }
 
   const getUVIdata = (lat, lon) => {
+    setLoading(p => ({ ...p, uvi: true }))
     let params = {
       appid: "ac04facc0292386d4ce278841518c209",
       units: isFarenheit ? "imperial" : "metric",
@@ -99,11 +118,15 @@ function App() {
     .catch(err => {
       console.log({err})
     })
+    .finally(()=> {
+      setLoading(p => ({ ...p, uvi: false }))
+    })
   }
 
   // air_pollution
 
   const getAirdata = (lat, lon) => {
+    setLoading(p => ({ ...p, aqi: true }))
     let params = {
       appid: "ac04facc0292386d4ce278841518c209",
       // units: isFarenheit ? "imperial" : "metric",
@@ -117,6 +140,9 @@ function App() {
     })
     .catch(err => {
       console.log({err})
+    })
+    .finally(()=> {
+      setLoading(p => ({ ...p, aqi: false }))
     })
   }
 
@@ -156,10 +182,10 @@ function App() {
     <div className="w-screen h-screen   bg-[#D6D7DA]">
       <div className="grid grid-cols-5 grid-rows-5 gap-0 h-full">
           <div className="col-span-2 row-span-5 bg-white ">
-            <SidePanel weatherData={weatherData} getWeatherByCity={getWeatherByCity} cityName={cityName} setCityName={setCityName} getMyLocation={getMyLocation} isFarenheit={isFarenheit}/>
+            <SidePanel weatherData={weatherData} getWeatherByCity={getWeatherByCity} cityName={cityName} setCityName={setCityName} getMyLocation={getMyLocation} isFarenheit={isFarenheit} loading={loading}/>
           </div>
           <div className="col-span-3 row-span-5 col-start-3 bg-[#F6F6F8] ">
-            <Main weatherData={weatherData} weekData={weatherForecastData?.list} hourlyData={weatherForecastData?.list} setIsFarenheit={setIsFarenheit} isFarenheit={isFarenheit} isToday={isToday} setIsToday={setIsToday} uviData={uviData} airData={airData} />
+            <Main weatherData={weatherData} weekData={weatherForecastData?.list} hourlyData={weatherForecastData?.list} setIsFarenheit={setIsFarenheit} isFarenheit={isFarenheit} isToday={isToday} setIsToday={setIsToday} uviData={uviData} airData={airData} loading={loading}/>
           </div>
       </div>
     </div>
