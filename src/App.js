@@ -188,6 +188,9 @@ function App() {
             <Main weatherData={weatherData} weekData={weatherForecastData?.list} hourlyData={weatherForecastData?.list} setIsFarenheit={setIsFarenheit} isFarenheit={isFarenheit} isToday={isToday} setIsToday={setIsToday} uviData={uviData} airData={airData} loading={loading}/>
           </div>
       </div>
+      <div id="desktop-view-message" class="lg:hidden fixed bottom-0 right-0 bg-gray-900 text-white p-4">
+          This website is optimized for desktop viewing. Mobile responsiveness is under development.
+      </div>
     </div>
   );
 }
