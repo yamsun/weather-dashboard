@@ -46,8 +46,8 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                 const feelsLike = parseInt(item?.main?.feels_like)
                 const weatherIconCode = item?.weather?.[0]?.icon;
                 return (
-                    <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl'>
-                        <div className='text-sm'>{hour}</div>
+                    <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl bg-gradient-to-b from-white via-slate-200 to-white'>
+                        <div className='text-sm font-medium'>{hour}</div>
                         <div>
                             <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
                         </div>
@@ -69,8 +69,8 @@ const Main = ({weekData, weatherData, isFarenheit, setIsFarenheit, isToday, setI
                 // const weatherDescription = item.weather?.[0].description;
                 const weatherIconCode = item.weather?.[0].icon;
                 return (
-                    <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl'>
-                        <div className='text-sm'>{day.slice(0,3)}</div>
+                    <div key={item?.dt} className='flex-1 min-w-10 max-w-30 bg-white flex flex-col justify-between items-center p-4 rounded-xl bg-gradient-to-b from-white via-slate-200 to-white'>
+                        <div className='text-sm font-medium'>{day.slice(0,3)}</div>
                         <div>
                             <img src={`https://openweathermap.org/img/wn/${weatherIconCode}@4x.png`}/>
                         </div>
@@ -183,6 +183,16 @@ function getAQIMessage(index) {
         default:
             return "Invalid index";
     }
+}
+
+const ForeCastCardSkeleton = () => {
+    return (
+        <div class="flex-1 min-w-10 max-w-30 bg-gray-200 animate-pulse flex flex-col justify-between items-center p-4 rounded-xl">
+            <div class="h-4 bg-gray-400 rounded w-1/2"></div>
+            <div class="h-16 w-16 bg-gray-400 rounded-full mt-2"></div>
+            <div class="h-4 bg-gray-400 rounded w-2/3 mt-2"></div>
+        </div>
+    )
 }
 
 export default Main
