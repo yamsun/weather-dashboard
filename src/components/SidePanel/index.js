@@ -12,7 +12,7 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
         axios.get(`https://api.unsplash.com/search/photos?query=${cityName}&client_id=j9aFe3aT-exks1nuSlwY1BmX9bRAQkKRR-_yQKayG-k&per_page=1`)
         .then((res)=> {
             console.log('city img res', res)
-            setCityImage(res?.data?.results?.[0]?.urls?.small)
+            setCityImage(res?.data?.results?.[0]?.urls?.raw)
         })
         .catch((err)=> {
             console.log({err});
@@ -39,21 +39,19 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
     <div className='flex flex-col justify-around p-10 gap-4 h-full'>
         <div className='flex justify-between items-center gap-2'>
             <div className='flex items-center gap-2 flex-1'>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
-                <div className='flex-1'>
-                    <form onSubmit={(e)=> {
+                <div className='flex-1 flex items-center rounded-xl px-2 hover:outline outline-gray-400 outline-2' 
+                // style={{border:"2px solid lightgray"}}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <form className='flex-1' onSubmit={(e)=> {
                         e.preventDefault()
                         const inputValue = e.target.querySelector('input').value; // Get the input value
                         getWeatherByCity(inputValue);
                         setCityName(inputValue)
                     }}>
-                        <input type='text' onSubmit={(e)=> {
-                            e.stopPropagation()
-                            getWeatherByCity(e.target.value)
-                            console.log('form data', e)
-                    }} placeholder='Search for places ...' className='w-full p-2'/>
+                        <input type='search' placeholder='Search for places ...' className='w-full p-2 outline-none'/>
                     </form>
                 </div>
             </div>
@@ -65,7 +63,7 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
             
         </div>
 
-        <div className='flex justify-center items-center w-full h-40 relative'>
+        <div className='flex justify-center items-center w-full min-h-40 h-[20vh] relative'>
             <img src={weatherImg} className="w-full h-full object-cover rounded-2xl"/>
             {/* <img height='200px' width='200px' src={`https://openweathermap.org/img/wn/10d@4x.png`} /> */}
             <div className='absolute bottom-2 flex flex-col items-center text-white'>
@@ -94,12 +92,12 @@ const SidePanel = ({weatherData: data, getWeatherByCity, cityName, setCityName, 
                 <div className='align-middle'>Feels like <b> {data?.main?.feels_like}°{isFarenheit? "F" : "C"} </b></div>
             </div>
         </div>
-        <div className='w-full h-40 relative' >
+        <div className='w-full h-[30vh] relative' >
             <img src={cityImage} 
                 className="w-full h-full object-cover rounded-2xl" alt={data?.name}
             />
             <div className="absolute inset-0 flex justify-center items-center text-white">
-                <span className="text-2xl font-medium">{data?.name}, {data?.sys?.country}</span>
+                <span className="text-2xl font-medium p-2  hover:bg-gray-800 hover:bg-opacity-70 hover:text-white">{data?.name}, {data?.sys?.country}</span>
             </div>
         </div>
     </div>

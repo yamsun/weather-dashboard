@@ -14,7 +14,9 @@ function App() {
   const [isFarenheit, setIsFarenheit] = useState(false);
   const [myLongitute, setMyLongitute] = useState("");
   const [myLatitute, setMyLatitute] = useState("");
-  const [isToday, setIsToday ] = useState(false)
+  const [isToday, setIsToday ] = useState(false);
+  const [uviData, setUviData] = useState("");
+  const [airData, setAirData] = useState("");
 
   const getWeatherByCity = (cityName) => {
     console.log({ cityName });
@@ -22,7 +24,8 @@ function App() {
       .get("https://api.openweathermap.org/data/2.5/weather", {
         params: {
           q: cityName,
-          appid: "d98411a21a90bab401b28d9346819bba",
+          // appid: "d98411a21a90bab401b28d9346819bba",
+          appid: "ac04facc0292386d4ce278841518c209",
           units: isFarenheit ? "imperial" : "metric",
         },
       })
@@ -30,6 +33,8 @@ function App() {
         console.log("Weather by city", res.data);
         setWeatherData(res?.data);
         getWeatherDataOneCall(res?.data?.coord?.lat, res?.data?.coord?.lon)
+        getUVIdata(res?.data?.coord?.lat, res?.data?.coord?.lon)
+        getAirdata(res?.data?.coord?.lat, res?.data?.coord?.lon)
       })
       .catch((err) => {
         console.log("Weather by city error", err);
@@ -44,7 +49,8 @@ function App() {
         params: {
           lat: lat,
           lon: lon,
-          appid: "d98411a21a90bab401b28d9346819bba",
+          appid: "ac04facc0292386d4ce278841518c209",
+          // appid: "d98411a21a90bab401b28d9346819bba",
           units: isFarenheit ? "imperial" : "metric",
         },
       })
@@ -61,16 +67,53 @@ function App() {
 
   const getWeatherDataOneCall = (lat, lon) => {
     let params = {
-      exclude: "minutely,alerts",
-      appid: "10dc4a9025b811536cde5459c533e738",
+      appid: "ac04facc0292386d4ce278841518c209",
       units: isFarenheit ? "imperial" : "metric",
       lat : lat,
-      lon : lon
+      lon : lon,
+      cnt: 7
     }
-    axios.get('https://api.openweathermap.org/data/2.5/onecall', {params})
+    axios.get('https://api.openweathermap.org/data/2.5/forecast', {params})
     .then(res => {
       // setWeatherData(res?.data?.current)
       setWeatherForecastData(res?.data)
+    })
+    .catch(err => {
+      console.log({err})
+    })
+  }
+
+  const getUVIdata = (lat, lon) => {
+    let params = {
+      appid: "ac04facc0292386d4ce278841518c209",
+      units: isFarenheit ? "imperial" : "metric",
+      lat : lat,
+      lon : lon,
+      cnt:7
+    }
+    axios.get('https://api.openweathermap.org/data/2.5/uvi', {params})
+    .then(res => {
+      // setWeatherData(res?.data?.current)
+      setUviData(res?.data?.value)
+    })
+    .catch(err => {
+      console.log({err})
+    })
+  }
+
+  // air_pollution
+
+  const getAirdata = (lat, lon) => {
+    let params = {
+      appid: "ac04facc0292386d4ce278841518c209",
+      // units: isFarenheit ? "imperial" : "metric",
+      lat : lat,
+      lon : lon,
+    }
+    axios.get('https://api.openweathermap.org/data/2.5/air_pollution', {params})
+    .then(res => {
+      // setWeatherData(res?.data?.current)
+      setAirData(res?.data?.list?.[0]?.main?.aqi)
     })
     .catch(err => {
       console.log({err})
@@ -86,7 +129,9 @@ function App() {
           setMyLatitute(position.coords.latitude);
           setMyLongitute(position.coords.longitude);
           getWeatherByCoordinates(position.coords?.latitude, position.coords?.longitude);
-          getWeatherDataOneCall(position.coords?.latitude, position.coords?.longitude)
+          getWeatherDataOneCall(position.coords?.latitude, position.coords?.longitude);
+          getUVIdata(position.coords?.latitude, position.coords?.longitude)
+          getAirdata(position.coords?.latitude, position.coords?.longitude)
         },
         (error) => {
           console.log("error", error);
@@ -108,13 +153,13 @@ function App() {
   console.log({weatherData});
 
   return (
-    <div className="p-10 px-20 w-screen h-screen   bg-[#D6D7DA]">
+    <div className="w-screen h-screen   bg-[#D6D7DA]">
       <div className="grid grid-cols-5 grid-rows-5 gap-0 h-full">
-          <div className="col-span-2 row-span-5 bg-white rounded-l-3xl">
+          <div className="col-span-2 row-span-5 bg-white ">
             <SidePanel weatherData={weatherData} getWeatherByCity={getWeatherByCity} cityName={cityName} setCityName={setCityName} getMyLocation={getMyLocation} isFarenheit={isFarenheit}/>
           </div>
-          <div className="col-span-3 row-span-5 col-start-3 bg-[#F6F6F8] rounded-r-3xl">
-            <Main weatherData={weatherData} weekData={weatherForecastData?.daily} hourlyData={weatherForecastData?.hourly} setIsFarenheit={setIsFarenheit} isFarenheit={isFarenheit} isToday={isToday} setIsToday={setIsToday} />
+          <div className="col-span-3 row-span-5 col-start-3 bg-[#F6F6F8] ">
+            <Main weatherData={weatherData} weekData={weatherForecastData?.list} hourlyData={weatherForecastData?.list} setIsFarenheit={setIsFarenheit} isFarenheit={isFarenheit} isToday={isToday} setIsToday={setIsToday} uviData={uviData} airData={airData} />
           </div>
       </div>
     </div>
